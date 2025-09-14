@@ -1,0 +1,80 @@
+src/
+├── assets/                  # Static files (images, icons, fonts)
+│   ├── images/
+│   └── styles/              # Global CSS/SCSS (e.g., Tailwind config)
+├── components/              # Reusable UI components
+│   ├── common/              # Shared across roles
+│   │   ├── Header.tsx       # Navigation bar (role-aware)
+│   │   ├── Footer.tsx
+│   │   ├── Modal/           # Generic modals (e.g., confirmations)
+│   │   ├── LoadingSpinner.tsx
+│   │   └── ErrorBoundary.tsx
+│   ├── forms/               # Form components (e.g., with Formik/Yup validation)
+│   │   ├── ProductForm.tsx
+│   │   ├── CommissionRuleForm.tsx
+│   │   └── WithdrawalForm.tsx
+│   └── charts/              # Data viz (e.g., Recharts or Chart.js wrappers)
+│       ├── SalesChart.tsx
+│       └── ConversionFunnel.tsx
+├── pages/                   # Role-based routes (using React Router)
+│   ├── auth/                # Shared auth flows
+│   │   ├── Login.tsx
+│   │   ├── Register.tsx     # Role selection during signup
+│   │   └── ForgotPassword.tsx
+│   ├── customer/            # Customer-facing public views
+│   │   ├── Home.tsx         # Product catalog/search
+│   │   ├── ProductDetail.tsx
+│   │   ├── Cart.tsx
+│   │   ├── Checkout.tsx     # Integrate Stripe Elements
+│   │   └── Orders.tsx       # Order history/timeline
+│   ├── vendor/              # Vendor dashboard (protected route)
+│   │   ├── Dashboard.tsx    # Overview with sales KPIs
+│   │   ├── Products/        # CRUD ops
+│   │   │   ├── List.tsx
+│   │   │   ├── Upload.tsx   # Form with image upload (e.g., Cloudinary)
+│   │   │   └── Edit.tsx
+│   │   ├── Commissions/     # Rule setup and previews
+│   │   │   └── Rules.tsx
+│   │   └── Reports.tsx      # Filtered sales data/export
+│   ├── influencer/          # Influencer dashboard
+│   │   ├── Dashboard.tsx    # Campaign performance
+│   │   ├── Campaigns/       # Creation/tracking
+│   │   │   ├── Create.tsx   # Promo link generator
+│   │   │   └── Analytics.tsx # Conversions by channel
+│   │   └── Earnings.tsx     # Commission history/payouts
+│   ├── affiliator/          # Affiliator dashboard
+│   │   ├── Dashboard.tsx    # Referral stats
+│   │   ├── Links.tsx        # Generate/track referral URLs
+│   │   ├── Analytics.tsx    # Clicks/conversions table
+│   │   └── Withdrawals.tsx  # Request form with balance
+│   └── admin/               # Admin dashboard (highest privileges)
+│       ├── Dashboard.tsx    # Platform-wide analytics
+│       ├── Moderation/      # Approvals queue
+│       │   ├── Vendors.tsx
+│       │   ├── Influencers.tsx
+│       │   └── Affiliators.tsx
+│       ├── Settings.tsx     # Global configs (e.g., commission tiers)
+│       ├── Analytics.tsx    # Aggregated reports (e.g., total revenue)
+│       └── Payouts.tsx      # Reconciliation/bulk processing
+├── services/                # API integrations
+│   ├── api.ts               # Axios instance with JWT interceptors
+│   ├── auth.ts              # Login/logout, role checks
+│   ├── products.ts          # Vendor-specific endpoints (e.g., POST /products)
+│   ├── commissions.ts       # Workflow calls (e.g., GET /commissions/track)
+│   └── analytics.ts         # Reporting fetches
+├── hooks/                   # Custom React hooks
+│   ├── useAuth.ts           # Role-based access
+│   ├── useQueryProducts.ts  # API data fetching
+│   └── useRealTime.ts       # WebSocket for live updates (e.g., new orders)
+├── utils/                   # Helpers
+│   ├── constants.ts         # Roles enum, API base URL
+│   ├── validators.ts        # Schema validations
+│   └── formatters.ts        # Currency/date helpers
+├── contexts/                # Global state
+│   └── AuthContext.tsx      # User role, token management
+├── App.tsx                  # Root with Router, Providers
+├── index.tsx                # Entry point
+└── types/                   # TypeScript definitions
+    ├── role.ts              # Enum: 'vendor' | 'influencer' | etc.
+    ├── product.ts           # Interfaces for data models
+    └── api.ts               # Response types
