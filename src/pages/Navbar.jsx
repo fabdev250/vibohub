@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   ShoppingCart, 
   Menu, 
@@ -11,17 +11,24 @@ import {
   LayoutDashboard
 } from "lucide-react";
 
-export default function Navbar() {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleNavClick = (section) => {
     console.log(`Navigating to ${section}`);
     setIsMenuOpen(false);
-    // In a real app with react-router-dom:
-    // navigate(`/${section}`)
+    // Add your navigation logic here
+    // For React Router: navigate(`/${section}`)
+    // For Next.js: router.push(`/${section}`)
   };
 
-  // Define navigation items with corresponding icons
   const navItems = [
     { id: "marketplace", label: "Marketplace", icon: Store },
     { id: "vendors", label: "Vendors", icon: Users },
@@ -30,124 +37,295 @@ export default function Navbar() {
   ];
 
   return (
-    <div className="sticky top-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Sticky Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/10 backdrop-blur-lg border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            {/* Logo */}
-            <div
-              className="flex items-center space-x-2 group cursor-pointer"
-              onClick={() => handleNavClick("home")}
-            >
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <ShoppingCart className="w-6 h-6 text-white" />
+    <>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+          font-family: 'Inter', sans-serif;
+        }
+        
+        .card-3d {
+          transform-style: preserve-3d;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .card-3d:hover {
+          transform: translateY(-8px) rotateX(5deg) rotateY(-2deg) scale(1.02);
+          box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.5),
+            0 0 30px rgba(59, 130, 246, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-3d {
+          transform-style: preserve-3d;
+          transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .logo-3d:hover {
+          transform: translateY(-4px) rotateX(15deg) rotateY(-10deg) rotateZ(2deg) scale(1.1);
+          filter: drop-shadow(0 15px 25px rgba(59, 130, 246, 0.4));
+        }
+        
+        .nav-item-3d {
+          transform-style: preserve-3d;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+        }
+        
+        .nav-item-3d:hover {
+          transform: translateY(-3px) rotateX(8deg) scale(1.05);
+          text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .nav-item-3d::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+          border-radius: 12px;
+          opacity: 0;
+          transition: all 0.3s ease;
+          z-index: -1;
+        }
+        
+        .nav-item-3d:hover::before {
+          opacity: 1;
+          transform: translateZ(-10px);
+        }
+        
+        .button-3d {
+          transform-style: preserve-3d;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .button-3d::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+          opacity: 0;
+          transition: all 0.3s ease;
+        }
+        
+        .button-3d:hover {
+          transform: translateY(-4px) rotateX(8deg) scale(1.05);
+          box-shadow: 
+            0 20px 40px -8px rgba(59, 130, 246, 0.6),
+            0 0 25px rgba(147, 51, 234, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .button-3d:hover::before {
+          opacity: 1;
+        }
+        
+        .button-3d:active {
+          transform: translateY(-2px) rotateX(4deg) scale(1.02);
+        }
+        
+        .mobile-menu-3d {
+          transform-style: preserve-3d;
+          animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-30px) rotateX(-15deg) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg) scale(1);
+          }
+        }
+        
+        .floating-orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(1px);
+          animation: float 6s ease-in-out infinite;
+          pointer-events: none;
+        }
+        
+        .floating-orb:nth-child(1) {
+          width: 80px;
+          height: 80px;
+          background: radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent);
+          top: 20%;
+          left: 10%;
+          animation-delay: 0s;
+        }
+        
+        .floating-orb:nth-child(2) {
+          width: 60px;
+          height: 60px;
+          background: radial-gradient(circle, rgba(147, 51, 234, 0.3), transparent);
+          top: 60%;
+          right: 15%;
+          animation-delay: 2s;
+        }
+        
+        .floating-orb:nth-child(3) {
+          width: 40px;
+          height: 40px;
+          background: radial-gradient(circle, rgba(236, 72, 153, 0.3), transparent);
+          bottom: 30%;
+          left: 60%;
+          animation-delay: 4s;
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+          25% { transform: translateY(-20px) rotateZ(2deg); }
+          50% { transform: translateY(0px) rotateZ(0deg); }
+          75% { transform: translateY(-10px) rotateZ(-2deg); }
+        }
+        
+        .perspective-container {
+          perspective: 1000px;
+          perspective-origin: center top;
+        }
+        
+        .glow-text {
+          text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .neon-border {
+          box-shadow: 
+            0 0 5px rgba(59, 130, 246, 0.5),
+            0 0 10px rgba(59, 130, 246, 0.3),
+            0 0 15px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+      `}</style>
+
+      <div className="fixed top-0 w-full z-50 perspective-container">
+        {/* Background with floating orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="floating-orb"></div>
+          <div className="floating-orb"></div>
+          <div className="floating-orb"></div>
+        </div>
+
+        {/* Main Navbar */}
+        <nav className={`relative transition-all duration-500 ${
+          scrollY > 50 
+            ? 'bg-slate-900/90 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-blue-500/20' 
+            : 'bg-transparent'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-3">
+              {/* Logo */}
+              <div
+                className="flex items-center space-x-2 group cursor-pointer logo-3d"
+                onClick={() => handleNavClick("home")}
+              >
+                <div className="relative">
+                  <div className="w-9 h-9 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30 neon-border">
+                    <ShoppingCart className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-400 rounded-lg opacity-0 group-hover:opacity-20 transition-all duration-300 blur-md"></div>
+                </div>
+                <span className="text-xl font-bold text-white glow-text">
+                  Vendor Hub
+                </span>
               </div>
-              <span className="text-2xl font-bold text-white">Vendor Hub</span>
-            </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-6">
-              {navItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNavClick(item.id)}
-                    className="text-white/80 hover:text-white transition-colors duration-300 relative group flex items-center space-x-1.5 px-3 py-2 rounded-lg hover:bg-white/5"
-                  >
-                    <IconComponent className="w-5 h-5" />
-                    <span>{item.label}</span>
-                    <span className="absolute -bottom-1 left-3 right-3 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                  </button>
-                );
-              })}
-              
-              {/* User Profile Icon */}
-              <button
-                onClick={() => handleNavClick("profile")}
-                className="text-white/80 hover:text-white transition-colors duration-300 p-2 rounded-full hover:bg-white/10"
-                aria-label="User profile"
-              >
-                <User className="w-6 h-6" />
-              </button>
-              
-              <button
-                onClick={() => handleNavClick("dashboard")}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2.5 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
-              >
-                <LayoutDashboard className="w-5 h-5" />
-                <span>Dashboard</span>
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center space-x-4">
-              <button
-                onClick={() => handleNavClick("profile")}
-                className="text-white hover:text-blue-300 transition-colors duration-300 p-2 rounded-full hover:bg-white/10"
-                aria-label="User profile"
-              >
-                <User className="w-6 h-6" />
-              </button>
-              <button
-                className="text-white hover:text-blue-300 transition-colors duration-300"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {isMenuOpen && (
-            <div className="md:hidden bg-white/10 backdrop-blur-lg rounded-lg mt-2 p-4 border border-white/20 animate-fade-in">
-              <div className="flex flex-col space-y-3">
-                {navItems.map((item) => {
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-2">
+                {navItems.map((item, index) => {
                   const IconComponent = item.icon;
                   return (
                     <button
                       key={item.id}
                       onClick={() => handleNavClick(item.id)}
-                      className="text-white/80 hover:text-white transition-colors duration-300 py-3 px-4 rounded-lg hover:bg-white/10 flex items-center space-x-3"
+                      className="nav-item-3d text-white/90 hover:text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 transition-all duration-300"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <IconComponent className="w-5 h-5" />
-                      <span className="capitalize">{item.label}</span>
+                      <IconComponent className="w-4 h-4" />
+                      <span className="text-sm">{item.label}</span>
                     </button>
                   );
                 })}
+                
+                {/* User Profile Icon */}
+                <button
+                  onClick={() => handleNavClick("profile")}
+                  className="nav-item-3d text-white/90 hover:text-white p-2 rounded-lg ml-2"
+                  aria-label="User profile"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+                
+                {/* Dashboard Button */}
                 <button
                   onClick={() => handleNavClick("dashboard")}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-2"
+                  className="button-3d bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2 ml-4 shadow-lg shadow-blue-500/30"
                 >
-                  <LayoutDashboard className="w-5 h-5" />
-                  <span>Dashboard</span>
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="text-sm">Dashboard</span>
+                </button>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="md:hidden flex items-center space-x-2">
+                <button
+                  onClick={() => handleNavClick("profile")}
+                  className="nav-item-3d text-white hover:text-blue-300 p-2 rounded-lg"
+                  aria-label="User profile"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+                <button
+                  className="nav-item-3d text-white hover:text-blue-300 p-2 rounded-lg"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                  {isMenuOpen ? (
+                    <X className="w-5 h-5" />
+                  ) : (
+                    <Menu className="w-5 h-5" />
+                  )}
                 </button>
               </div>
             </div>
-          )}
-        </div>
-      </nav>
-      {/* Animation */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
-    </div>
+
+            {/* Mobile Menu */}
+            {isMenuOpen && (
+              <div className="md:hidden mobile-menu-3d rounded-xl mt-3 p-4 mb-3 shadow-xl shadow-blue-500/20">
+                <div className="flex flex-col space-y-1">
+                  {navItems.map((item, index) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => handleNavClick(item.id)}
+                        className="card-3d text-white/90 hover:text-white py-3 px-4 rounded-lg flex items-center space-x-3 font-medium"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <IconComponent className="w-4 h-4" />
+                        <span className="capitalize">{item.label}</span>
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() => handleNavClick("dashboard")}
+                    className="button-3d bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center space-x-2 mt-3 shadow-lg shadow-blue-500/30"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Dashboard</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </nav>
+      </div>
+    </>
   );
-}
+};
+
+export default Navbar;
